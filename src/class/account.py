@@ -2,11 +2,12 @@ import time
 
 
 class Account:
-    account_holder = []
-    account_number = str(None)
-    balance = float(0)
-    joint_account = bool(False)
-    account_statements = []
+    def __init__(self):
+        self.account_holder = []
+        self.account_number = str(None)
+        self.balance = float(0)
+        self.joint_account = bool(False)
+        self.account_statements = []
 
     def get_account_number(self):
         return self.account_number
@@ -17,23 +18,29 @@ class Account:
     def get_balance(self):
         return self.balance
 
-    def deposit(self, holder, amount):
+    def deposit(self, holder, amount, description):
         if amount <= 0:
-            return "---It's not possible to deposit this value.---"
+            return False  # "---It's not possible to deposit this value.---"
         current_balance = self.balance
         self.balance += amount
-        self.set_account_statements(holder, current_balance, '+', amount)
-        return "---The deposit was successful.---"
+        self.set_account_statements(holder, current_balance, description, '+', amount)
+        return True  # "---The deposit was successful.---"
 
-    def withdraw(self, holder, amount):
+    def withdraw(self, holder, amount, description):
         if amount <= 0:
-            return "---This value cannot be withdrawn.---"
+            return False  # "---This value cannot be withdrawn.---"
         elif amount > self.balance:
-            return "---Insufficient balance.---"
+            return False  # "---Insufficient balance.---"
         current_balance = self.balance
         self.balance -= amount
-        self.set_account_statements(holder, current_balance, '-', amount)
-        return "---The withdrawal was successful.---"
+        self.set_account_statements(holder, current_balance, description, '-', amount)
+        return True  # "---The withdrawal was successful.---"
+
+    def bank_transfer(self, holder, account, amount):
+        if self.withdraw(holder, amount, 'Transference'):
+            account.deposit(None, amount, 'Transference')
+            return True
+        return False
 
     def get_joint_account(self):
         return self.joint_account
@@ -41,16 +48,18 @@ class Account:
     def set_joint_account(self, new_holder):
         self.joint_account = True
         self.account_holder.append(new_holder)
+        # new_holder.account.append(self)
 
     def get_account_statements(self):
         return self.account_statements
 
-    def set_account_statements(self, holder, balance, operation, amount):
+    def set_account_statements(self, holder, balance, description, operation, amount):
         account_statement = "Date: {}\n" \
-                         "Holder: {} \n" \
-                         "        {} \n" \
-                         "      {} {} \n" \
-                         "---------------- \n" \
-                         "Balance: {}".format(time.strftime('%H:%M on %d/%b/%Y'), holder.name, balance, operation,
-                                              amount, self.balance)
+                         "Holder:  {}\n" \
+                         "        {:>11}{:.2f} \n" \
+                         "{:15} {}R${:.2f} \n" \
+                         "------------------------- \n" \
+                         "Balance: {:>10}{:.2f}".format(time.strftime('%H:%M on %d/%b/%Y'),
+                                                        (None if holder is None else holder.name), 'R$', balance,
+                                                        description, operation, amount, 'R$', self.balance)
         self.account_statements.append(account_statement)
