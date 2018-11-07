@@ -1,13 +1,21 @@
 import time
+from debit_card import DebitCard
 
 
 class Account:
-    def __init__(self):
+    def __init__(self, holder, card):
         self.account_holder = []
+        self.account_holder.append(holder)
         self.account_number = str(None)
         self.balance = float(0)
         self.joint_account = bool(False)
         self.account_statements = []
+        self.creation_date = time.strftime('%d/%b/%Y')
+        self.card = card
+        self.new_debit_card(self.card, holder)
+
+    def get_account_holder(self):
+        return self.account_holder
 
     def get_account_number(self):
         return self.account_number
@@ -49,6 +57,7 @@ class Account:
         self.joint_account = True
         self.account_holder.append(new_holder)
         # new_holder.account.append(self)
+        self.new_debit_card(self.card, new_holder)
 
     def get_account_statements(self):
         return self.account_statements
@@ -63,3 +72,15 @@ class Account:
                                                         (None if holder is None else holder.name), 'R$', balance,
                                                         description, operation, amount, 'R$', self.balance)
         self.account_statements.append(account_statement)
+
+    def get_creation_date(self):
+        return self.creation_date
+
+    def new_debit_card(self, card, holder):
+        debit_card = DebitCard(self, holder)
+        card.debit_card.append(debit_card)
+
+    def pay_the_bills(self, value):
+        if self.withdraw(value, 'Paid Account'):
+            return True
+        return False
