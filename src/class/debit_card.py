@@ -1,7 +1,8 @@
 class DebitCard:
-    def __init__(self, account, holder):
+    def __init__(self, account, holder, number):
         self.account = account
         self.holder = holder
+        self.debit_card_number = number
 
     def get_holder(self):
         return self.holder
