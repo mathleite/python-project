@@ -3,19 +3,29 @@ from debit_card import DebitCard
 
 
 class Account:
-    def __init__(self, holder, card):
+    def __init__(self, bank, holder, password, account_number, card):
+        self.bank = bank
         self.account_holder = []
         self.account_holder.append(holder)
-        self.account_number = str(None)
+        self.password = []
+        self.set_password(holder, password)
+        self.account_number = account_number
         self.balance = float(0)
         self.joint_account = bool(False)
         self.account_statements = []
         self.creation_date = time.strftime('%d/%b/%Y')
         self.card = card
-        self.new_debit_card(self.card, holder)
+        self.new_debit_card(self.card, holder, '{}-{}'.format(self.account_number, len(self.account_holder)))
+
+    def get_bank(self):
+        return self.bank
 
     def get_account_holder(self):
         return self.account_holder
+
+    def set_password(self, holder, password):
+        pw = '{}{}'.format(holder.get_cpf(), password)
+        self.password.append(pw)
 
     def get_account_number(self):
         return self.account_number
@@ -53,11 +63,13 @@ class Account:
     def get_joint_account(self):
         return self.joint_account
 
-    def set_joint_account(self, new_holder):
+    def set_joint_account(self, new_holder, password):
         self.joint_account = True
         self.account_holder.append(new_holder)
+        self.set_password(new_holder, password)
         # new_holder.account.append(self)
-        self.new_debit_card(self.card, new_holder)
+        self.new_debit_card(self.card, new_holder, '{}-{}'.format(self.account_number,
+                                                                  len(self.account_holder)))
 
     def get_account_statements(self):
         return self.account_statements
@@ -76,11 +88,12 @@ class Account:
     def get_creation_date(self):
         return self.creation_date
 
-    def new_debit_card(self, card, holder):
-        debit_card = DebitCard(self, holder)
+    def new_debit_card(self, card, holder, number):
+        debit_card = DebitCard(self, holder, number)
         card.debit_card.append(debit_card)
+        return number
 
-    def pay_the_bills(self, value):
-        if self.withdraw(value, 'Paid Account'):
+    def pay_the_bills(self, value, holder):
+        if self.withdraw(value, holder, 'Paid Account'):
             return True
         return False
