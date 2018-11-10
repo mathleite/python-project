@@ -9,6 +9,10 @@ class Bank:
     neighborhood = str('bairro Jd. Lugar Nenhum,')
     state = str('estado Sem Saber - (SS).')
 
+    def __init__(self, bank_name, president_name):
+        self.set_name(bank_name)
+        self.president = President(president_name, self)
+
     def get_name(self):
         return self.name
 
@@ -16,9 +20,7 @@ class Bank:
         self.name = name
 
     def get_address(self):
-        print(self.street, self.number, self.neighborhood, self.state)
+        return self.street, self.number, self.neighborhood, self.state
 
-
-bank = Bank()
-president = President()
-bank.get_address()
+    def get_president(self):
+        return self.president.get_name()
