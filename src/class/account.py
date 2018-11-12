@@ -15,13 +15,16 @@ class Account:
         self.account_statements = []
         self.creation_date = time.strftime('%d/%b/%Y')
         self.card = card
-        self.new_debit_card(self.card, holder, '{}-{}'.format(self.account_number, len(self.account_holder)))
+        self.new_debit_card(self.card, holder)
 
     def get_bank(self):
         return self.bank
 
     def get_account_holder(self):
         return self.account_holder
+
+    def get_password(self):
+        return self.password
 
     def set_password(self, holder, password):
         pw = '{}{}'.format(holder.get_cpf(), password)
@@ -68,8 +71,7 @@ class Account:
         self.account_holder.append(new_holder)
         self.set_password(new_holder, password)
         # new_holder.account.append(self)
-        self.new_debit_card(self.card, new_holder, '{}-{}'.format(self.account_number,
-                                                                  len(self.account_holder)))
+        self.new_debit_card(self.card, new_holder)
 
     def get_account_statements(self):
         return self.account_statements
@@ -88,10 +90,12 @@ class Account:
     def get_creation_date(self):
         return self.creation_date
 
-    def new_debit_card(self, card, holder, number):
-        debit_card = DebitCard(self, holder, number)
+    def get_debit_card_number(self):
+        return '{}-{}'.format(self.account_number, len(self.account_holder))
+
+    def new_debit_card(self, card, holder):
+        debit_card = DebitCard(self, holder, self.get_debit_card_number())
         card.debit_card.append(debit_card)
-        return number
 
     def pay_the_bills(self, value, holder):
         if self.withdraw(value, holder, 'Paid Account'):
