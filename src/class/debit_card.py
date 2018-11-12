@@ -10,6 +10,9 @@ class DebitCard:
     def get_account(self):
         return self.account
 
+    def get_debit_card_number(self):
+        return self.debit_card_number
+
     def deposit(self, amount):
         if not self.account.deposit(self.holder, amount, 'D.C. deposit'):
             return False
