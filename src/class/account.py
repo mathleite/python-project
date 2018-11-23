@@ -98,6 +98,6 @@ class Account:
         card.debit_card.append(debit_card)
 
     def pay_the_bills(self, value, holder):
-        if self.withdraw(value, holder, 'Paid Account'):
+        if self.withdraw(holder, value, 'Paid Account'):
             return True
         return False
