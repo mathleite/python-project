@@ -3,6 +3,7 @@ from client import Client
 from account import Account
 from card import Card
 from client_account import ClientAccount
+from credit_card import CreditCard
 
 
 def menu():
@@ -13,7 +14,8 @@ def menu():
     print('\t 3 - Clients')
     print('\t 4 - Bank Details')
     print('\t 5 - Cash Machine')
-    print('\t 6 - Exit')
+    print('\t 6 - Credit Card')
+    print('\t 0 - Exit')
     choice = str(input('Option: '))
 
     if choice == '1':
@@ -27,6 +29,8 @@ def menu():
     elif choice == '5':
         cash_machine()
     elif choice == '6':
+        credit_card()
+    elif choice == '0':
         exit(-1)
     else:
         print('This option does not exist')
@@ -58,7 +62,7 @@ def account_menu():
     print('\n\t====Account Menu====')
     print('\t 1 - New Account')
     print('\t 2 - New registered client Account')
-    print('\t 3 - Return')
+    print('\t 0 - Return')
     choice = str(input('Option: '))
 
     if choice == '1':
@@ -180,7 +184,7 @@ def banking_operations(debit_card):
     print('\t3 - Bank Transfer')
     print('\t4 - Add Holder')
     print('\t5 - Account Statement')
-    print('\t6 - Return')
+    print('\t0 - Return')
     choice = str(input('Option: '))
 
     if choice == '1':
@@ -193,7 +197,7 @@ def banking_operations(debit_card):
         add_holder(debit_card)
     elif choice == '5':
         account_statement(debit_card)
-    elif choice == '6':
+    elif choice == '0':
         return 'y'
     else:
         print('This option does not exist')
@@ -250,7 +254,7 @@ def add_holder(debit_card):
         print('You debit card number is ', debit_card.get_account().get_debit_card_number())
         input("Press the <ENTER> key to continue...")
     elif choice == '3':
-        return 
+        return
     else:
         print('This option does not exist')
         input("Press the <ENTER> key to continue...")
@@ -261,6 +265,134 @@ def account_statement(debit_card):
     for statement in debit_card.get_account().get_account_statements():
         print(statement, '\n')
     input("Press the <ENTER> key to continue...")
+
+
+def credit_card():
+    while True:
+        print('\n\t==== Credit Card ====')
+        print('\t1 - New Credit Card')
+        print('\t2 - Show Credit Cards')
+        print('\t3 - Shopping')
+        print('\t4 - Credit card profile')
+        print('\t0 - Return')
+        choice = str(input('Option: '))
+
+        if choice == '1':
+            new_credit_card()
+        elif choice == '2':
+            print('\n\t=== Credit Cards ===')
+            for credit_card in card.get_credit_card():
+                print('Holder: {} | Credit limit: {} | Credit limit used: {}'
+                      ''.format(credit_card.get_holder().get_name(), credit_card.get_credit_limit(),
+                                credit_card.get_credit_limit_used()))
+            input("Press the <ENTER> key to continue...")
+        elif choice == '3':
+            credit_card_number = str(input('Credit card number: '))
+            password = str(input('Password: '))
+            credit_card = find_credit_card(credit_card_number, password)
+            shopping(credit_card)
+        elif choice == '4':
+            credit_card_number = str(input('Credit card number: '))
+            password = str(input('Password: '))
+            credit_card = find_credit_card(credit_card_number, password)
+            credit_card_profile(credit_card)
+        elif choice == '0':
+            return
+        else:
+            print('This option does not exist')
+            input("Press the <ENTER> key to continue...")
+
+
+def new_credit_card():
+    print('\n\t==== New Credit Card ====')
+    print('\t1 - New client credit card')
+    print('\t2 - New registered client credit card')
+    print('\t0 - Return')
+    choice = str(input('Option: '))
+
+    if choice == '1':
+        client = new_client()
+        income = float(input("Enter the clients's income: "))
+        credit_card_number = str(input('Enter the credit card number: '))
+        password = str(input('Enter the password: '))
+        new_credit = CreditCard(client, income, credit_card_number, password)
+        print('Your credit limit is {}'.format(new_credit.get_credit_limit()))
+        card.set_credit_card(new_credit)
+        input("Press the <ENTER> key to continue...")
+    elif choice == '2':
+        print('\n\t==== Find the registered Client ====')
+        cpf = str(input('Cpf: '))
+        client = find_client(cpf)
+        if client is None:
+            print('Client does not exist')
+            input("Press the <ENTER> key to continue...")
+        else:
+            print('Client: {}'.format(client.get_name()))
+            income = float(input("Enter the clients's income: "))
+            credit_card_number = str(input('Enter the credit card number: '))
+            password = str(input('Enter the password: '))
+            new_credit = CreditCard(client, income, credit_card_number, password)
+            print('Your credit limit is {}'.format(new_credit.get_credit_limit()))
+            card.set_credit_card(new_credit)
+            input("Press the <ENTER> key to continue...")
+    elif choice == '0':
+        return
+    else:
+        print('This option does not exist')
+        input("Press the <ENTER> key to continue...")
+
+
+def find_credit_card(credit_card_number, password):
+    for credit_card in card.get_credit_card():
+        if credit_card.get_credit_card_number() == credit_card_number and credit_card.get_password() == password:
+            return credit_card
+        return None
+
+
+def shopping(credit_card):
+    test = 'y'
+    print('\n\t=== Shopping ===')
+    while test == 'y':
+        product = str(input('Product: '))
+        price = float(input('Price R$'))
+
+        credit_card.pay_with_credit_card(price, product)
+
+        test = str(input('Continue? [y/n] '))
+
+
+def credit_card_profile(credit_card):
+    while True:
+        print('\n\t=== Credit card profile ===')
+        print('\t1 - Credit card bill')
+        print('\t2 - Pay credit card bill')
+        print('\t0 - Return')
+        choice = str(input('Option: '))
+
+        if choice == '1':
+            print('\n\t=== Credit card bill ===')
+            print('{}'.format('-' * 25))
+            for cc in credit_card.get_credit_card_bill():
+                print('{}'.format(cc))
+            input("Press the <ENTER> key to continue...")
+        elif choice == '2':
+            print('\n\t=== Pay credit card bill ===')
+            print('Login with Debit card and password')
+            debit_card_number = str(input('Debit Card number:'))
+            password = str(input('Password: '))
+            debit_card = login(debit_card_number, password)
+
+            if debit_card.get_account().pay_the_bills(credit_card.get_credit_limit_used(), debit_card.get_holder()):
+                credit_card.credit_card_bill_paid()
+                print('The credit card bill was paid')
+                input("Press the <ENTER> key to continue...")
+            else:
+                print('Error: Insufficient balance')
+        elif choice == '0':
+            return
+        else:
+            print('This option does not exist')
+            input("Press the <ENTER> key to continue...")
 
 
 bank_name = str(input('Bank name: '))
